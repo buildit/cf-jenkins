@@ -1,0 +1,46 @@
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+
+def target = "${project.buildDir}"
+
+task build(dependsOn: ['test', 'zip', 'install']) {
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.lloydsbanking.ci'
+            artifactId 'common'
+            version '0.0.1'
+            artifact "${project.buildDir}/common.zip"
+        }
+    }
+}
+
+repositories {
+  mavenLocal()
+}
+
+task test(type: Exec){
+  workingDir '.'
+  commandLine 'python', '-m', 'unittest', 'discover', 'tests'
+}
+
+task zip(type:Zip) {
+  baseName = "common"
+  from ("."){
+    exclude '**/build'
+    exclude 'tests/**'
+    exclude 'build.gradle'
+    exclude '.gradle'
+ }
+ destinationDir file(target)
+}
+
+task install(){
+  publishToMavenLocal
+}
+
+artifacts {
+    archives file: zip.archivePath, name: 'common', type: 'zip', builtBy: zip
+}
