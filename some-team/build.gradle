@@ -1,4 +1,5 @@
 apply from: "plugins.gradle"
+apply from: "war.gradle"
 
 def target = "${project.buildDir}"
 def temp = "${target}/temp"
@@ -17,7 +18,11 @@ dependencies {
     cfjenkins files("${project.rootDir}/common/build/common.zip")
 }
 
-task build(dependsOn: ['copyPlugins', 'unzipArchive', 'copyLocalFiles', 'zipMergedArchive']) {
+task build(dependsOn: ['cleanTemp', 'copyWar', 'copyPlugins', 'unzipArchive', 'copyLocalFiles', 'zipMergedArchive']) {
+}
+
+task cleanTemp(type: Delete) {
+  delete temp
 }
 
 task unzipArchive(type: Copy, dependsOn: 'copyPlugins'){

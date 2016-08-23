@@ -32,7 +32,7 @@ def getNameFromPath(def path) {
 }
 
 def loadPluginsFromFile() {
-  def configFile = file("plugins/plugins.groovy")
+  def configFile = file("config.groovy")
   project.ext.set("jenkinsPlugins", new ConfigSlurper().parse(configFile.toURL()))
   project.jenkinsPlugins.plugins.each {
     project.dependencies.add('jenkinsPlugins', it)
