@@ -1,10 +1,10 @@
+apply plugin: 'groovy'
 apply plugin: 'maven'
 apply plugin: 'maven-publish'
 
 def target = "${project.buildDir}"
 
-task build(dependsOn: ['test', 'zip', 'install']) {
-}
+build.dependsOn dependsOn: ['testScripts', 'zip', 'install']
 
 publishing {
     publications {
@@ -17,28 +17,41 @@ publishing {
     }
 }
 
+dependencies {
+    compile 'org.codehaus.groovy:groovy-all:2.4.7'
+
+    testCompile 'org.jenkins-ci.main:jenkins-test-harness:2.9'
+    testCompile "org.jenkins-ci.main:jenkins-war:2.9"
+    testCompile "org.jenkins-ci.main:jenkins-war:2.9:war-for-test@jar"
+
+    testCompile "org.zeroturnaround:zt-zip:1.9"
+}
+
 repositories {
-  mavenLocal()
+    mavenCentral()
+    jcenter()
+    maven {
+        url 'http://repo.jenkins-ci.org/releases/'
+    }
+    mavenLocal()
 }
 
-task test(type: Exec){
-  workingDir '.'
-  commandLine 'python', '-m', 'unittest', 'discover', 'tests'
+task testScripts(type: Exec) {
+    workingDir '.'
+    commandLine 'python', '-m', 'unittest', 'discover', 'tests'
 }
 
-task zip(type:Zip) {
-  baseName = "common"
-  from ("."){
-    exclude '**/build'
-    exclude 'tests/**'
-    exclude 'build.gradle'
-    exclude '.gradle'
- }
- destinationDir file(target)
-}
-
-task install(){
-  publishToMavenLocal
+task zip(type: Zip) {
+    baseName = "common"
+    from(".") {
+        exclude '**/build'
+        exclude 'src/**'
+        exclude 'target/**'
+        exclude 'tests/**'
+        exclude 'build.gradle'
+        exclude '.gradle'
+    }
+    destinationDir file(target)
 }
 
 artifacts {

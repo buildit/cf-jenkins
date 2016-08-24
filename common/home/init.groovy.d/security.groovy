@@ -17,7 +17,7 @@ void set_security(String security_model) {
 
   if (security_model == 'disabled') {
     instance.disableSecurity()
-    return null
+    return
   }
 
   def strategy
